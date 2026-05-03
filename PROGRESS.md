@@ -97,6 +97,7 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 
 ## Current status
 
+- 2026-05-03: Added display sleep behaviour after onboarding: display sleeps after 30s idle and wakes on touch/button/encoder; setup/onboarding screens remain always-on.
 - M5Stack Dial detected on `/dev/ttyACM0` as Espressif USB JTAG/serial, MAC `24:58:7c:53:d6:14`.
 - PlatformIO installed in local venv: `/home/pi/.platformio-venv/bin/pio`.
 - Firmware builds successfully for `env:m5dial`.

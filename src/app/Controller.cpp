@@ -7,12 +7,14 @@ Controller::Controller(hardware::Hardware& hardware, devialet::Client& devialet)
 
 void Controller::begin() {
   hardware_.begin();
+  lastInteractionMs_ = millis();
   hardware_.display().showBoot("Devialet Dial");
 }
 
 void Controller::loop() {
   handleInput(hardware_.input().poll());
   refreshStatus(false);
+  maybeSleepDisplay();
 }
 
 void Controller::refreshStatus(bool force) {
@@ -25,8 +27,8 @@ void Controller::refreshStatus(bool force) {
     status_ = next;
     haveStatus_ = true;
     errorDisplayed_ = false;
-    drawStatus();
-  } else if (!haveStatus_ && !errorDisplayed_) {
+    if (hardware_.display().isAwake()) drawStatus();
+  } else if (!haveStatus_ && !errorDisplayed_ && hardware_.display().isAwake()) {
     errorDisplayed_ = true;
     hardware_.display().showError("No Devialet");
   }
@@ -34,6 +36,15 @@ void Controller::refreshStatus(bool force) {
 
 void Controller::handleInput(const hardware::InputState& input) {
   uint32_t now = millis();
+  bool hasInteraction = input.encoderDelta != 0 || input.buttonPressed || input.buttonLongPressed || input.touched;
+
+  if (hasInteraction) {
+    lastInteractionMs_ = now;
+    if (!hardware_.display().isAwake()) {
+      wakeDisplay();
+      return;
+    }
+  }
 
   if (input.encoderDelta != 0 && now - lastVolumeCommandMs_ > 80) {
     if (input.encoderDelta > 0) {
@@ -53,6 +64,23 @@ void Controller::handleInput(const hardware::InputState& input) {
 
 void Controller::drawStatus() {
   hardware_.display().showStatus(status_.sourceName, status_.volume, status_.playbackState, status_.muted);
+}
+
+void Controller::wakeDisplay() {
+  hardware_.display().setAwake(true);
+  if (haveStatus_) {
+    drawStatus();
+  } else if (errorDisplayed_) {
+    hardware_.display().showError("No Devialet");
+  } else {
+    hardware_.display().showBoot("Finding Devialet");
+  }
+}
+
+void Controller::maybeSleepDisplay() {
+  if (!hardware_.display().isAwake()) return;
+  if (millis() - lastInteractionMs_ < kDisplaySleepAfterMs) return;
+  hardware_.display().setAwake(false);
 }
 
 } // namespace app

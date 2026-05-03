@@ -21,10 +21,15 @@ private:
   uint32_t lastVolumeCommandMs_ = 0;
   bool haveStatus_ = false;
   bool errorDisplayed_ = false;
+  uint32_t lastInteractionMs_ = 0;
+
+  static constexpr uint32_t kDisplaySleepAfterMs = 30000;
 
   void refreshStatus(bool force = false);
   void handleInput(const hardware::InputState& input);
   void drawStatus();
+  void wakeDisplay();
+  void maybeSleepDisplay();
 };
 
 } // namespace app

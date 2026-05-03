@@ -20,6 +20,8 @@ public:
   virtual void showBoot(const String& message) = 0;
   virtual void showStatus(const String& sourceName, int volume, const String& playbackState, bool muted) = 0;
   virtual void showError(const String& message) = 0;
+  virtual void setAwake(bool awake) = 0;
+  virtual bool isAwake() const = 0;
 };
 
 class Input {

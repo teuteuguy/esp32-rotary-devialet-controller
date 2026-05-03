@@ -35,3 +35,9 @@ During development, flash/NVS can also be erased from PlatformIO:
 /home/pi/.platformio-venv/bin/pio run -t erase --upload-port /dev/ttyACM0
 /home/pi/.platformio-venv/bin/pio run -t upload --upload-port /dev/ttyACM0
 ```
+
+## Display sleep
+
+After Wi-Fi onboarding, the display turns off after 30 seconds of no touch/button/encoder activity. Touching the screen, pressing the button, or turning the dial wakes the display. The first wake interaction is consumed so an accidental wake touch does not also change volume/source.
+
+During Wi-Fi onboarding/setup screens, the display remains on.

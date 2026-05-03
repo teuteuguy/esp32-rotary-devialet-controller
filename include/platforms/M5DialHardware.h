@@ -12,6 +12,12 @@ public:
   void showBoot(const String& message) override;
   void showStatus(const String& sourceName, int volume, const String& playbackState, bool muted) override;
   void showError(const String& message) override;
+  void setAwake(bool awake) override;
+  bool isAwake() const override { return awake_; }
+
+private:
+  bool awake_ = true;
+  uint8_t brightness_ = 180;
 };
 
 class M5DialInput final : public hardware::Input {

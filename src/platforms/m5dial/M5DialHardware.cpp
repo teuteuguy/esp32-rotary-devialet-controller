@@ -12,6 +12,7 @@ void M5DialDisplay::begin() {
 }
 
 void M5DialDisplay::showBoot(const String& message) {
+  setAwake(true);
   M5Dial.Display.fillScreen(TFT_BLACK);
   M5Dial.Display.setTextColor(TFT_WHITE, TFT_BLACK);
   M5Dial.Display.drawString(message, 120, 105, &fonts::Font4);
@@ -19,6 +20,7 @@ void M5DialDisplay::showBoot(const String& message) {
 }
 
 void M5DialDisplay::showStatus(const String& sourceName, int volume, const String& playbackState, bool muted) {
+  if (!awake_) return;
   M5Dial.Display.fillScreen(TFT_BLACK);
   M5Dial.Display.setTextDatum(middle_center);
   M5Dial.Display.setTextColor(TFT_WHITE, TFT_BLACK);
@@ -33,10 +35,22 @@ void M5DialDisplay::showStatus(const String& sourceName, int volume, const Strin
 }
 
 void M5DialDisplay::showError(const String& message) {
+  if (!awake_) return;
   M5Dial.Display.fillScreen(TFT_BLACK);
   M5Dial.Display.setTextColor(TFT_RED, TFT_BLACK);
   M5Dial.Display.setTextDatum(middle_center);
   M5Dial.Display.drawString(message, 120, 120, &fonts::Font4);
+}
+
+void M5DialDisplay::setAwake(bool awake) {
+  if (awake == awake_) return;
+  awake_ = awake;
+  if (awake_) {
+    M5Dial.Display.wakeup();
+    M5Dial.Display.setBrightness(brightness_);
+  } else {
+    M5Dial.Display.sleep();
+  }
 }
 
 void M5DialInput::begin() {
