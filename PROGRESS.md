@@ -107,8 +107,9 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 
 ## Current limitations / not yet verified
 
+- 2026-05-03: mDNS from Pi showed Phantoms advertise generic `_http._tcp` TXT `path=/` rather than `manufacturer=Devialet`; `/ipcontrol/v1` works on `192.168.68.176` and `.177`. Firmware relaxed discovery to accept Phantom hostnames and force `/ipcontrol/v1`; discovery now retries every 10s if no endpoint is set.
 - mDNS discovery implementation is only a first-pass placeholder; should be hardened after testing.
-- Devialet JSON field names should be verified against real device responses.
+- Devialet JSON field names verified against local Phantom responses for current source/volume; parser updated for nested `source`, `muteState`, metadata `title`.
 - Source switching UI is not implemented yet; current scaffold has volume + mute/status concepts only.
 - Captive portal must be verified by Tim from phone/laptop: connect to SSID `DevialetDialSetup`, open `http://192.168.4.1` if needed. Tim chose mDNS discovery as the primary Devialet target strategy; leave Devialet host blank during provisioning unless debugging.
 - 2026-05-03: Tim reported no setup AP and flickering `No Devialet`. Patched flicker/reset/mDNS diagnostics. WiFiManager AP remained suspect, so replaced WiFiManager with custom `WiFi.softAP` + DNS + WebServer captive portal. Current setup SSID `DevialetDialSetup`, password `devialet`, URL `http://192.168.4.1`. Erased flash/NVS and reflashed. Awaiting Tim phone check. If still invisible, next step is AP-only diagnostic firmware to isolate ESP32 radio/board config.

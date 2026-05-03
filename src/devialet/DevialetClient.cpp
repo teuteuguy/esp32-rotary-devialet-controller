@@ -27,10 +27,17 @@ bool Client::discover(Endpoint& out) {
                   i, hostname.c_str(), host.c_str(), port, manufacturer.c_str(),
                   ipControlVersion.c_str(), path.c_str());
 
-    bool isDevialet = manufacturer.equalsIgnoreCase("Devialet") && ipControlVersion == "1";
-    if (!isDevialet) continue;
+    bool hasIpControlTxt = manufacturer.equalsIgnoreCase("Devialet") && ipControlVersion == "1";
+    bool looksLikePhantom = hostname.indexOf("Phantom") >= 0;
 
-    if (path.isEmpty()) path = "/ipcontrol/v1";
+    // Some Devialet firmware/router combinations advertise only a generic
+    // _http._tcp record with TXT path=/, while /ipcontrol/v1 is still present.
+    // Prefer proper TXT records, but accept Phantom hostnames as a pragmatic
+    // fallback and force the documented IP Control path. Avoid Arch here because
+    // it may not represent the playback group we want to control.
+    if (!hasIpControlTxt && !looksLikePhantom) continue;
+
+    if (path.isEmpty() || path == "/") path = "/ipcontrol/v1";
     out.host = host;
     out.port = port == 0 ? 80 : port;
     out.path = path;
@@ -51,16 +58,19 @@ bool Client::getStatus(Status& out) {
   JsonDocument src;
   if (!getJson("/groups/current/sources/current", src)) return false;
 
-  out.sourceId = src["sourceId"] | "";
-  out.sourceName = src["sourceName"] | src["name"] | out.sourceId;
+  JsonVariant source = src["source"];
+  out.sourceId = src["sourceId"] | source["sourceId"] | "";
+  out.sourceName = src["sourceName"] | src["name"] | source["name"] | source["type"] | out.sourceId;
   out.playbackState = src["playingState"] | src["playbackState"] | "";
-  out.muted = src["muted"] | false;
+
+  String muteState = src["muteState"] | "";
+  out.muted = (src["muted"] | false) || muteState == "muted";
 
   JsonVariant metadata = src["metadata"];
   if (!metadata.isNull()) {
     out.artist = metadata["artist"] | "";
     out.album = metadata["album"] | "";
-    out.track = metadata["track"] | "";
+    out.track = metadata["track"] | metadata["title"] | "";
   }
   return true;
 }

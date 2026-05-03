@@ -29,8 +29,15 @@ devialet::Client devialetClient;
 app::ConfigPortal configPortal;
 app::RuntimeConfig runtimeConfig;
 app::Controller controller(board, devialetClient);
+uint32_t lastDiscoveryAttemptMs = 0;
 
-static void configureDevialetEndpoint() {
+static void configureDevialetEndpoint(bool force = false) {
+  if (!force && devialetClient.endpoint().valid()) return;
+
+  uint32_t now = millis();
+  if (!force && now - lastDiscoveryAttemptMs < 10000) return;
+  lastDiscoveryAttemptMs = now;
+
   if (!String(DEVIALET_HOST).isEmpty()) {
     devialet::Endpoint endpoint;
     endpoint.host = DEVIALET_HOST;
@@ -81,10 +88,11 @@ void setup() {
   bool wifiReady = configPortal.begin(runtimeConfig);
   Serial.printf("[boot] Wi-Fi ready: %s\n", wifiReady ? "yes" : "no");
   board.display().showBoot("Finding Devialet");
-  configureDevialetEndpoint();
+  configureDevialetEndpoint(true);
 }
 
 void loop() {
+  configureDevialetEndpoint(false);
   controller.loop();
   delay(10);
 }
