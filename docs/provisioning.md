@@ -1,13 +1,14 @@
 # Provisioning
 
-The firmware uses WiFiManager for clean first-run Wi-Fi setup.
+The firmware uses a small built-in captive portal for clean first-run Wi-Fi setup.
 
 ## First boot
 
 If the device has no saved Wi-Fi credentials, it starts a captive portal access point:
 
 ```text
-SSID: Devialet Dial Setup
+SSID: DevialetDialSetup
+Password: devialet
 ```
 
 Connect to that network from a phone/laptop. The captive portal should open automatically; if it does not, browse to:

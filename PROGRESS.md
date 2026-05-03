@@ -102,7 +102,7 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 - PlatformIO installed in local venv: `/home/pi/.platformio-venv/bin/pio`.
 - Firmware builds successfully for `env:m5dial`.
 - Firmware uploaded successfully to `/dev/ttyACM0`.
-- Clean Wi-Fi provisioning implemented with WiFiManager captive portal, SSID `Devialet Dial Setup`.
+- Clean Wi-Fi provisioning implemented with custom captive portal, SSID `DevialetDialSetup`.
 - Optional Devialet host/port/path fallback can be configured in the portal and is persisted in ESP32 Preferences.
 
 ## Current limitations / not yet verified
@@ -110,8 +110,8 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 - mDNS discovery implementation is only a first-pass placeholder; should be hardened after testing.
 - Devialet JSON field names should be verified against real device responses.
 - Source switching UI is not implemented yet; current scaffold has volume + mute/status concepts only.
-- Captive portal must be verified by Tim from phone/laptop: connect to SSID `Devialet Dial Setup`, open `http://192.168.4.1` if needed. Tim chose mDNS discovery as the primary Devialet target strategy; leave Devialet host blank during provisioning unless debugging.
-- 2026-05-03: Tim reported no setup AP and flickering `No Devialet`. Patched: no WiFiManager portal timeout, boot-time long-press Wi-Fi reset window, one-shot error display to avoid flicker, mDNS TXT diagnostics/filtering, USB CDC build flags. Erased flash/NVS and reflashed. Awaiting Tim confirmation of current screen/AP.
+- Captive portal must be verified by Tim from phone/laptop: connect to SSID `DevialetDialSetup`, open `http://192.168.4.1` if needed. Tim chose mDNS discovery as the primary Devialet target strategy; leave Devialet host blank during provisioning unless debugging.
+- 2026-05-03: Tim reported no setup AP and flickering `No Devialet`. Patched flicker/reset/mDNS diagnostics. WiFiManager AP remained suspect, so replaced WiFiManager with custom `WiFi.softAP` + DNS + WebServer captive portal. Current setup SSID `DevialetDialSetup`, password `devialet`, URL `http://192.168.4.1`. Erased flash/NVS and reflashed. Awaiting Tim phone check. If still invisible, next step is AP-only diagnostic firmware to isolate ESP32 radio/board config.
 - Serial monitor produced no useful runtime logs after upload; likely missed early boot logs or app is waiting in portal. Add more visible display states if needed.
 
 ## What Tim needs to provide next
@@ -139,7 +139,7 @@ Likely optional but useful:
 
 ## Next plan
 
-1. Tim connects to `Devialet Dial Setup` captive portal and enters Wi-Fi details.
+1. Tim connects to `DevialetDialSetup` captive portal and enters Wi-Fi details.
 2. Verify M5Dial display/encoder/button APIs on real hardware.
 3. Verify Devialet endpoint responses against local speakers.
 4. Replace placeholder mDNS with robust TXT-based discovery if available in ESP32 Arduino APIs.

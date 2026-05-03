@@ -79,7 +79,8 @@ First-run Wi-Fi setup uses a captive portal.
 If no saved Wi-Fi credentials exist, connect to:
 
 ```text
-Devialet Dial Setup
+DevialetDialSetup
+Password: devialet
 ```
 
 Then open `http://192.168.4.1` if the captive portal does not appear automatically.
