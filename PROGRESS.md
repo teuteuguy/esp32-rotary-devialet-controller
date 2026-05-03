@@ -169,3 +169,18 @@ PlatformIO venv commands:
 /home/pi/.platformio-venv/bin/pio run -t upload --upload-port /dev/ttyACM0
 /home/pi/.platformio-venv/bin/pio device monitor --port /dev/ttyACM0 --baud 115200
 ```
+
+## Verified from USB logs
+
+2026-05-03 after adding serial control:
+
+```text
+[devialet] Candidate 192.168.68.176:80/ipcontrol/v1 name=Phantom 108 dB Right model=Phantom 108 dB family=Phantom leader=yes volume=yes source=yes
+[devialet] Selected controllable endpoint 192.168.68.176:80/ipcontrol/v1 name=Phantom 108 dB Right
+[serial] endpoint: 192.168.68.176:80/ipcontrol/v1
+[serial] status: volume=35 muted=no source=spotifyconnect sourceId=4b9b02cc-6a23-4438-a472-68f49e91d0ed playback=paused track=One Of Us artist=Joan Osborne album=Relish
+[serial] device: name=Phantom 108 dB Right model=Phantom 108 dB family=Phantom ipControl=1 firmware=DOS leader=yes group=c91fe465-9491-4024-85cd-c5ad2f7aae64
+[serial] sources: count=8
+```
+
+Important: discovery no longer relies on friendly/custom mDNS display names. It probes each `_http._tcp` candidate at `/ipcontrol/v1/devices/current` and selects a candidate that identifies as Devialet IP Control and supports current source/volume endpoints.

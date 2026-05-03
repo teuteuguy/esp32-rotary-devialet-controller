@@ -40,6 +40,10 @@ src/
 platformio.ini         # build environments
 ```
 
+## USB serial control
+
+USB serial at 115200 baud provides logs and a small control shell. See `docs/serial-control.md`.
+
 ## Devialet API notes
 
 Devialet Phantom DOS >= 2.14 exposes unauthenticated HTTP endpoints on the local network:

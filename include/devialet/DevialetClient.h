@@ -37,7 +37,10 @@ public:
   explicit Client(uint32_t timeoutMs = 1200);
 
   bool discover(Endpoint& out);
+  bool probe(const Endpoint& candidate, JsonDocument* deviceOut = nullptr);
+  bool getDevice(JsonDocument& out);
   void setEndpoint(const Endpoint& endpoint);
+  void clearEndpoint();
   const Endpoint& endpoint() const;
 
   bool getStatus(Status& out);
@@ -54,6 +57,7 @@ private:
   uint32_t timeoutMs_;
 
   bool getJson(const String& relativePath, JsonDocument& doc);
+  bool getJsonAt(const Endpoint& endpoint, const String& relativePath, JsonDocument& doc);
   bool postJson(const String& relativePath, const String& body = "{}");
 };
 
