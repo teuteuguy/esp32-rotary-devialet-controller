@@ -19,7 +19,7 @@ http://192.168.4.1
 Configure:
 
 - Wi-Fi SSID/password
-- Optional Devialet IP/host
+- Optional Devialet IP/host fallback
 - Optional Devialet port, default `80`
 - Optional Devialet API path, default `/ipcontrol/v1`
 

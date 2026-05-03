@@ -89,7 +89,7 @@ The portal also accepts an optional static Devialet endpoint. Leave it blank to 
 ## Planned MVP
 
 1. Wi‑Fi captive portal provisioning
-2. Devialet discovery or static-IP fallback
+2. mDNS Devialet discovery with static-IP fallback
 3. Display current volume/source
 4. Rotary volume up/down
 5. Source menu + source switching

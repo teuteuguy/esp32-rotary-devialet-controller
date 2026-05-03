@@ -102,14 +102,14 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 - Firmware builds successfully for `env:m5dial`.
 - Firmware uploaded successfully to `/dev/ttyACM0`.
 - Clean Wi-Fi provisioning implemented with WiFiManager captive portal, SSID `Devialet Dial Setup`.
-- Optional Devialet host/port/path can be configured in the portal and is persisted in ESP32 Preferences.
+- Optional Devialet host/port/path fallback can be configured in the portal and is persisted in ESP32 Preferences.
 
 ## Current limitations / not yet verified
 
 - mDNS discovery implementation is only a first-pass placeholder; should be hardened after testing.
 - Devialet JSON field names should be verified against real device responses.
 - Source switching UI is not implemented yet; current scaffold has volume + mute/status concepts only.
-- Captive portal must be verified by Tim from phone/laptop: connect to SSID `Devialet Dial Setup`, open `http://192.168.4.1` if needed.
+- Captive portal must be verified by Tim from phone/laptop: connect to SSID `Devialet Dial Setup`, open `http://192.168.4.1` if needed. Tim chose mDNS discovery as the primary Devialet target strategy; leave Devialet host blank during provisioning unless debugging.
 - Serial monitor produced no useful runtime logs after upload; likely missed early boot logs or app is waiting in portal. Add more visible display states if needed.
 
 ## What Tim needs to provide next
@@ -123,8 +123,7 @@ Minimum needed for the next implementation/testing pass:
    - or create a local ignored `secrets.ini`,
    - or ask me to implement captive portal/provisioning first.
 4. Confirm Devialet target strategy:
-   - use mDNS discovery first,
-   - or provide fixed Devialet IP/port/path for faster MVP testing.
+   - use mDNS discovery first; static Devialet IP is fallback/debug only.
 
 Likely optional but useful:
 
