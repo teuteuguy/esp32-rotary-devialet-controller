@@ -20,6 +20,7 @@ private:
   uint32_t lastRefreshMs_ = 0;
   uint32_t lastVolumeCommandMs_ = 0;
   bool haveStatus_ = false;
+  bool errorDisplayed_ = false;
 
   void refreshStatus(bool force = false);
   void handleInput(const hardware::InputState& input);

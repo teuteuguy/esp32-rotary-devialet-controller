@@ -12,23 +12,30 @@ void Client::setEndpoint(const Endpoint& endpoint) { endpoint_ = endpoint; }
 const Endpoint& Client::endpoint() const { return endpoint_; }
 
 bool Client::discover(Endpoint& out) {
-  // Minimal first pass. Some routers make ESP32 mDNS discovery awkward, so
-  // static endpoint fallback should remain supported.
   int count = MDNS.queryService("http", "tcp");
+  Serial.printf("[devialet] mDNS _http._tcp results: %d\n", count);
+
   for (int i = 0; i < count; ++i) {
-    String name = MDNS.hostname(i);
+    String hostname = MDNS.hostname(i);
     String host = MDNS.IP(i).toString();
     uint16_t port = MDNS.port(i);
+    String manufacturer = MDNS.txt(i, "manufacturer");
+    String ipControlVersion = MDNS.txt(i, "ipControlVersion");
+    String path = MDNS.txt(i, "path");
 
-    // Devialet IP Control services commonly include "ipcontrol" in the
-    // service instance name. TXT filtering can be hardened after hardware test.
-    if (name.indexOf("ipcontrol") >= 0 || name.indexOf("Phantom") >= 0) {
-      out.host = host;
-      out.port = port == 0 ? 80 : port;
-      out.path = "/ipcontrol/v1";
-      endpoint_ = out;
-      return true;
-    }
+    Serial.printf("[devialet] mDNS[%d] host=%s ip=%s port=%u manufacturer=%s ipControlVersion=%s path=%s\n",
+                  i, hostname.c_str(), host.c_str(), port, manufacturer.c_str(),
+                  ipControlVersion.c_str(), path.c_str());
+
+    bool isDevialet = manufacturer.equalsIgnoreCase("Devialet") && ipControlVersion == "1";
+    if (!isDevialet) continue;
+
+    if (path.isEmpty()) path = "/ipcontrol/v1";
+    out.host = host;
+    out.port = port == 0 ? 80 : port;
+    out.path = path;
+    endpoint_ = out;
+    return true;
   }
   return false;
 }

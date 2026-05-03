@@ -27,4 +27,11 @@ If Devialet host is left blank, firmware will try mDNS discovery after joining W
 
 ## Resetting credentials
 
-A firmware UI gesture for resetting saved credentials is still TODO. During development, erase flash or add a temporary reset build.
+On boot, the display shows `Hold to reset Wi-Fi` for about 3 seconds. Hold the screen button during this window to clear saved Wi-Fi/config and restart into provisioning.
+
+During development, flash/NVS can also be erased from PlatformIO:
+
+```bash
+/home/pi/.platformio-venv/bin/pio run -t erase --upload-port /dev/ttyACM0
+/home/pi/.platformio-venv/bin/pio run -t upload --upload-port /dev/ttyACM0
+```

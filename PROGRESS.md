@@ -110,6 +110,7 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 - Devialet JSON field names should be verified against real device responses.
 - Source switching UI is not implemented yet; current scaffold has volume + mute/status concepts only.
 - Captive portal must be verified by Tim from phone/laptop: connect to SSID `Devialet Dial Setup`, open `http://192.168.4.1` if needed. Tim chose mDNS discovery as the primary Devialet target strategy; leave Devialet host blank during provisioning unless debugging.
+- 2026-05-03: Tim reported no setup AP and flickering `No Devialet`. Patched: no WiFiManager portal timeout, boot-time long-press Wi-Fi reset window, one-shot error display to avoid flicker, mDNS TXT diagnostics/filtering, USB CDC build flags. Erased flash/NVS and reflashed. Awaiting Tim confirmation of current screen/AP.
 - Serial monitor produced no useful runtime logs after upload; likely missed early boot logs or app is waiting in portal. Add more visible display states if needed.
 
 ## What Tim needs to provide next

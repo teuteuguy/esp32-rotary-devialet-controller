@@ -8,7 +8,6 @@ namespace app {
 namespace {
 constexpr const char* kPrefsNamespace = "devdial";
 constexpr const char* kPortalSsid = "Devialet Dial Setup";
-constexpr uint16_t kPortalTimeoutSeconds = 180;
 
 String readPreference(const char* key, const char* fallback = "") {
   Preferences prefs;
@@ -65,9 +64,9 @@ bool ConfigPortal::begin(RuntimeConfig& config) {
   strlcpy(pathBuffer, savedPath.c_str(), sizeof(pathBuffer));
 
   WiFiManager wm;
-  wm.setConfigPortalTimeout(kPortalTimeoutSeconds);
+  // No timeout: if Wi-Fi is not configured/reachable, keep the setup AP visible.
   wm.setConnectTimeout(20);
-  wm.setConnectRetries(3);
+  wm.setConnectRetries(2);
   wm.setTitle("Devialet Dial");
 
   WiFiManagerParameter devialetHost("devialet_host", "Devialet IP/host (optional)", hostBuffer, sizeof(hostBuffer));

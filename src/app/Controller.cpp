@@ -24,8 +24,10 @@ void Controller::refreshStatus(bool force) {
   if (devialet_.getStatus(next)) {
     status_ = next;
     haveStatus_ = true;
+    errorDisplayed_ = false;
     drawStatus();
-  } else if (!haveStatus_) {
+  } else if (!haveStatus_ && !errorDisplayed_) {
+    errorDisplayed_ = true;
     hardware_.display().showError("No Devialet");
   }
 }

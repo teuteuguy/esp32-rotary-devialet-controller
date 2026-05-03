@@ -59,11 +59,27 @@ static void configureDevialetEndpoint() {
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
-  delay(200);
+  delay(800);
   Serial.println("[boot] Devialet Dial starting");
   controller.begin();
-  board.display().showBoot("Setup Wi-Fi AP");
-  configPortal.begin(runtimeConfig);
+
+  board.display().showBoot("Hold to reset Wi-Fi");
+  uint32_t resetWindowStart = millis();
+  while (millis() - resetWindowStart < 3000) {
+    auto input = board.input().poll();
+    if (input.buttonLongPressed) {
+      Serial.println("[config] Reset requested from boot button hold");
+      board.display().showBoot("Resetting Wi-Fi");
+      configPortal.reset();
+      delay(500);
+      ESP.restart();
+    }
+    delay(10);
+  }
+
+  board.display().showBoot("Wi-Fi setup");
+  bool wifiReady = configPortal.begin(runtimeConfig);
+  Serial.printf("[boot] Wi-Fi ready: %s\n", wifiReady ? "yes" : "no");
   board.display().showBoot("Finding Devialet");
   configureDevialetEndpoint();
 }
