@@ -2,6 +2,7 @@
 #include <ESPmDNS.h>
 #include <WiFi.h>
 
+#include <app/ConfigPortal.h>
 #include <app/Controller.h>
 #include <devialet/DevialetClient.h>
 
@@ -10,14 +11,6 @@
 platforms::m5dial::M5DialHardware board;
 #else
 #error "No hardware target selected"
-#endif
-
-#ifndef WIFI_SSID
-#define WIFI_SSID ""
-#endif
-
-#ifndef WIFI_PASSWORD
-#define WIFI_PASSWORD ""
 #endif
 
 #ifndef DEVIALET_HOST
@@ -33,34 +26,45 @@ platforms::m5dial::M5DialHardware board;
 #endif
 
 devialet::Client devialetClient;
+app::ConfigPortal configPortal;
+app::RuntimeConfig runtimeConfig;
 app::Controller controller(board, devialetClient);
-
-static void connectWifi() {
-  if (String(WIFI_SSID).isEmpty()) return;
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-  uint32_t start = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - start < 15000) {
-    delay(250);
-  }
-}
 
 static void configureDevialetEndpoint() {
   if (!String(DEVIALET_HOST).isEmpty()) {
-    devialetClient.setEndpoint({DEVIALET_HOST, DEVIALET_PORT, DEVIALET_PATH});
+    devialet::Endpoint endpoint;
+    endpoint.host = DEVIALET_HOST;
+    endpoint.port = DEVIALET_PORT;
+    endpoint.path = DEVIALET_PATH;
+    Serial.printf("[devialet] Using compile-time endpoint %s:%u%s\n", endpoint.host.c_str(), endpoint.port, endpoint.path.c_str());
+    devialetClient.setEndpoint(endpoint);
+    return;
+  }
+
+  if (runtimeConfig.hasStaticDevialetEndpoint) {
+    Serial.printf("[devialet] Using configured endpoint %s:%u%s\n", runtimeConfig.devialetEndpoint.host.c_str(), runtimeConfig.devialetEndpoint.port, runtimeConfig.devialetEndpoint.path.c_str());
+    devialetClient.setEndpoint(runtimeConfig.devialetEndpoint);
     return;
   }
 
   if (WiFi.status() == WL_CONNECTED && MDNS.begin("devialet-dial")) {
     devialet::Endpoint discovered;
-    if (devialetClient.discover(discovered)) return;
+    if (devialetClient.discover(discovered)) {
+      Serial.printf("[devialet] Discovered endpoint %s:%u%s\n", discovered.host.c_str(), discovered.port, discovered.path.c_str());
+      return;
+    }
+    Serial.println("[devialet] mDNS discovery found no endpoint");
   }
 }
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
+  delay(200);
+  Serial.println("[boot] Devialet Dial starting");
   controller.begin();
-  connectWifi();
+  board.display().showBoot("Setup Wi-Fi AP");
+  configPortal.begin(runtimeConfig);
+  board.display().showBoot("Finding Devialet");
   configureDevialetEndpoint();
 }
 

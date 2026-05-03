@@ -72,9 +72,23 @@ The M5Dial adapter should translate hardware events into generic app events:
 - touch gesture/tap
 - display draw calls
 
+## Provisioning
+
+First-run Wi-Fi setup uses a captive portal.
+
+If no saved Wi-Fi credentials exist, connect to:
+
+```text
+Devialet Dial Setup
+```
+
+Then open `http://192.168.4.1` if the captive portal does not appear automatically.
+
+The portal also accepts an optional static Devialet endpoint. Leave it blank to try mDNS discovery.
+
 ## Planned MVP
 
-1. Wi‑Fi connection using compile-time or file-based config
+1. Wi‑Fi captive portal provisioning
 2. Devialet discovery or static-IP fallback
 3. Display current volume/source
 4. Rotary volume up/down

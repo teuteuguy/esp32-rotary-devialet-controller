@@ -95,14 +95,22 @@ Known useful endpoints from existing OpenClaw `devialet` skill/reference:
 - Play/select source: `POST /groups/current/sources/{sourceId}/playback/play`
 - Mute/unmute: `POST /groups/current/sources/current/playback/mute|unmute`
 
+## Current status
+
+- M5Stack Dial detected on `/dev/ttyACM0` as Espressif USB JTAG/serial, MAC `24:58:7c:53:d6:14`.
+- PlatformIO installed in local venv: `/home/pi/.platformio-venv/bin/pio`.
+- Firmware builds successfully for `env:m5dial`.
+- Firmware uploaded successfully to `/dev/ttyACM0`.
+- Clean Wi-Fi provisioning implemented with WiFiManager captive portal, SSID `Devialet Dial Setup`.
+- Optional Devialet host/port/path can be configured in the portal and is persisted in ESP32 Preferences.
+
 ## Current limitations / not yet verified
 
-- PlatformIO is not installed on the Pi yet, so firmware compile has not been verified.
-- M5Dial hardware has not been plugged in/tested yet.
-- Wi-Fi credentials/config flow not implemented cleanly yet.
 - mDNS discovery implementation is only a first-pass placeholder; should be hardened after testing.
 - Devialet JSON field names should be verified against real device responses.
 - Source switching UI is not implemented yet; current scaffold has volume + mute/status concepts only.
+- Captive portal must be verified by Tim from phone/laptop: connect to SSID `Devialet Dial Setup`, open `http://192.168.4.1` if needed.
+- Serial monitor produced no useful runtime logs after upload; likely missed early boot logs or app is waiting in portal. Add more visible display states if needed.
 
 ## What Tim needs to provide next
 
@@ -130,20 +138,18 @@ Likely optional but useful:
 
 ## Next plan
 
-1. Install/check PlatformIO on Pi.
-2. Compile current scaffold and fix build errors.
-3. Plug/flash M5Stack Dial.
-4. Implement safe Wi-Fi config via ignored `secrets.ini` or generated header.
-5. Verify M5Dial display/encoder/button APIs on real hardware.
-6. Verify Devialet endpoint responses against local speakers.
-7. Replace placeholder mDNS with robust TXT-based discovery if available in ESP32 Arduino APIs.
-8. Build MVP UI:
+1. Tim connects to `Devialet Dial Setup` captive portal and enters Wi-Fi details.
+2. Verify M5Dial display/encoder/button APIs on real hardware.
+3. Verify Devialet endpoint responses against local speakers.
+4. Replace placeholder mDNS with robust TXT-based discovery if available in ESP32 Arduino APIs.
+5. Build MVP UI:
    - boot/connect screen
    - current source/volume screen
    - volume adjustment feedback
    - mute indication
-9. Add source list + selection UI.
-10. Commit each working milestone.
+6. Add source list + selection UI.
+7. Add long-press reset credentials/config gesture.
+8. Commit each working milestone.
 
 ## Resume commands
 
@@ -153,11 +159,11 @@ git status --short --branch
 git log --oneline -5
 ```
 
-If PlatformIO is installed:
+PlatformIO venv commands:
 
 ```bash
-pio run
-pio device list
-pio run -t upload
-pio device monitor
+/home/pi/.platformio-venv/bin/pio run
+/home/pi/.platformio-venv/bin/pio device list
+/home/pi/.platformio-venv/bin/pio run -t upload --upload-port /dev/ttyACM0
+/home/pi/.platformio-venv/bin/pio device monitor --port /dev/ttyACM0 --baud 115200
 ```
